@@ -60,8 +60,8 @@ try:
             printScore()
             # submitScore()
 
-# Scavenging work after the end of the program
+# Work after the end of the program when program exits with keyboard CTRL+D
 except KeyboardInterrupt:
         printScore()
-        # submitScore()
+        submitScore()
         GPIO.cleanup()

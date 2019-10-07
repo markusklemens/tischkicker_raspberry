@@ -1,7 +1,6 @@
 # Needed modules will be imported and configured
 import RPi.GPIO as GPIO
 import requests
-import json
 import time
 
 # Referring to the pins by the "Broadcom SOC channel" number
@@ -13,7 +12,7 @@ GPIO.setup(GPIO_PIN_HOME_TEAM, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 GPIO.setup(GPIO_PIN_AWAY_TEAM, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
 # Configure rest endpoint and json header
-url = 'http://httpbin.org/post'
+url = 'https://obscure-bayou-88461.herokuapp.com/foosball/score'
 headers = {'content-type': 'application/json'}
 
 # Goal counter vars
@@ -23,22 +22,25 @@ counterGoalAway = 0
 # Lables
 textGoalHome = 'Goal home'
 textGoalAway = 'Goal away'
-textGame = 'Game 1'
+textGame = 'team'
 
 # Timeout sleep in sec
 timeoutSleepInSec = 0.3
 
 # print function to show current score
-def printScore():
+def printScore(goal):
     global counterGoalHome, counterGoalAway
-    print 'Score Home vs. Away ' + str(counterGoalHome) + ':' + str(counterGoalAway)
+    print goal
 
 # submit current score to rest endpoint
-def submitScore():
-    global payload, response
-    payload = {textGame: printScore()}
-    response = requests.post(url, data=json.dumps(payload), headers=headers)
-    print response.text
+def submitScore(value):
+    try:
+        global payload
+        payload = {textGame: value}
+        print payload
+        requests.post(url, data=payload, headers=headers)
+    except:
+        print sys.exc_info()[0]
 
 # sleep to avoid goal counter is triggered to often becuse IR sensor has very sensitive time span
 def sleep():
@@ -49,19 +51,15 @@ try:
     while True:
         # goal home
         if GPIO.input(GPIO_PIN_HOME_TEAM) == False:
-            counterGoalHome += 1
             sleep()
-            printScore()
-            # submitScore()
+            printScore('home')
+            submitScore('home')
         # goal away
         elif GPIO.input(GPIO_PIN_AWAY_TEAM) == False:
-            counterGoalAway += 1
             sleep()
-            printScore()
-            # submitScore()
+            printScore('away')
+            submitScore('away')
 
 # Work after the end of the program when program exits with keyboard CTRL+D
-except KeyboardInterrupt:
-        printScore()
-        submitScore()
-        GPIO.cleanup()
+except:
+    print ''

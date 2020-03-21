@@ -12,7 +12,7 @@ GPIO.setup(GPIO_PIN_HOME_TEAM, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 GPIO.setup(GPIO_PIN_AWAY_TEAM, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
 # Configure rest endpoint and json header
-url = 'https://obscure-bayou-88461.herokuapp.com/foosball/score'
+url = 'http://httpbin.org/post'
 headers = {'content-type': 'application/json'}
 
 # Goal counter vars
@@ -38,7 +38,8 @@ def submitScore(value):
         global payload
         payload = {textGame: value}
         print payload
-        requests.post(url, data=payload, headers=headers)
+        response = requests.post(url, data=payload, headers=headers)
+        print response.text
     except:
         print sys.exc_info()[0]
 

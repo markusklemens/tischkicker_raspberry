@@ -5,7 +5,6 @@ import time
 
 # Referring to the pins by the "Broadcom SOC channel" number
 GPIO.setmode(GPIO.BCM)
-
 # Declaration of the input pins which are connected with the two IR sensors (home/away team)
 GPIO_PIN_HOME_TEAM = 25
 GPIO_PIN_AWAY_TEAM = 17

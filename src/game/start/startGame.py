@@ -12,33 +12,27 @@ GPIO.setup(GPIO_PIN_HOME_TEAM, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 GPIO.setup(GPIO_PIN_AWAY_TEAM, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
 # Configure rest endpoint and json header
-url = 'http://httpbin.org/post'
+url = 'http://mhpfoosball-env.eba-ezgg5jrp.eu-west-1.elasticbeanstalk.com/foosball/match/score'
 headers = {'content-type': 'application/json'}
 
-# Goal counter vars
-counterGoalHome = 0
-counterGoalAway = 0
-
 # Lables
-textGoalHome = 'Goal home'
-textGoalAway = 'Goal away'
-textGame = 'team'
+identCourt = "court"
+identTableId = "foosballTableId"
+goalHome = "HOME"
+goalAway = "AWAY"
+foosballTableId = "table1"
 
 # Timeout sleep in sec
 timeoutSleepInSec = 0.3
 
-# print function to show current score
-def printScore(goal):
-    global counterGoalHome, counterGoalAway
-    print goal
-
 # submit current score to rest endpoint
-def submitScore(value):
+def submitScore(goal):
     try:
         global payload
-        payload = {textGame: value}
+        payload = {identTableId: foosballTableId,
+                   identCourt: goal}
         print payload
-        response = requests.post(url, data=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers)
         print response.text
     except:
         print sys.exc_info()[0]
@@ -53,13 +47,11 @@ try:
         # goal home
         if GPIO.input(GPIO_PIN_HOME_TEAM) == False:
             sleep()
-            printScore('home')
-            submitScore('home')
+            submitScore(goalHome)
         # goal away
         elif GPIO.input(GPIO_PIN_AWAY_TEAM) == False:
             sleep()
-            printScore('away')
-            submitScore('away')
+            submitScore(goalAway)
 
 # Work after the end of the program when program exits with keyboard CTRL+D
 except:
